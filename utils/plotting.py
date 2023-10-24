@@ -15,10 +15,11 @@ def open_file(fpath, show=False):
     if show:
         x = df['x'].values.tolist()
         y = df['y'].values.tolist()
-        plot_tajectory(x, y)
+        plot_trajectory(x, y)
     return df
 
-def plot_tajectory(x, y):
+
+def plot_trajectory(x, y):
     time_cmap = np.arange(0, len(x))
     plt.scatter(x, y, s=1, c=time_cmap)
     plt.plot(x, y, c='gray', alpha=0.4)
