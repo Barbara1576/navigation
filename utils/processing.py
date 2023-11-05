@@ -1,6 +1,8 @@
 import numpy as np
 import pandas as pd
 from utils.plotting import plot_trajectory
+import pickle
+import os
 
 
 def open_file(ff, show=True):
@@ -12,7 +14,7 @@ def open_file(ff, show=True):
     return df
 
 
-def normalize(y):
+def normalize_angles_2pi(y):
     exceeded_indices = np.where((y < 0.))[0]
     y[exceeded_indices] += 2*np.pi
 
@@ -32,3 +34,20 @@ def cut_jumps(df, xmax, xmin, ymax, ymin, show=True):
     if show:
         plot_trajectory(dff['x'], dff['y'])
     return dff
+
+
+def save_preprocessed_data(sub_trajs_list, k, PATH):
+    if type(sub_trajs_list) != list:
+        raise ValueError('Should be a list!')
+
+    fname = os.path.join(PATH, f'{k}.pkl')
+    with open(fname, 'wb') as outp:
+        pickle.dump(sub_trajs_list, outp, pickle.HIGHEST_PROTOCOL)
+    print(f'Successfully saved {k} as {fname}')
+
+
+def open_preprocessed_data(fname):
+    with open(fname, 'rb') as inp:
+        sub_trajs_list = pickle.load(inp)
+    return sub_trajs_list
+
