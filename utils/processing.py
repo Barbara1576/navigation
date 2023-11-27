@@ -51,3 +51,35 @@ def open_preprocessed_data(fname):
         sub_trajs_list = pickle.load(inp)
     return sub_trajs_list
 
+
+def sort_walls_area(tr, wall_percent=0.1): 
+    ylen = tr['y'].max() - tr['y'].min() 
+    xlen = tr['x'].max() - tr['x'].min() 
+    xl = tr['x'].min() + xlen * wall_percent
+    xr = tr['x'].max() - xlen * wall_percent
+    yd = tr['y'].min() + ylen * wall_percent
+    yu = tr['y'].max()  - ylen * wall_percent
+
+    near_wall_list = np.zeros((len(tr),))
+    for i in range(len(tr)):     
+        if tr['x'].iloc[i] < xl:
+            if tr['y'].iloc[i] > yu:
+                near_wall_list[i] = 40
+            elif tr['y'].iloc[i] < yd:
+                near_wall_list[i] = 30
+            else:
+                near_wall_list[i] = 4
+        elif tr['x'].iloc[i] > xr:
+            if tr['y'].iloc[i] > yu:
+                near_wall_list[i] = 10
+            elif tr['y'].iloc[i] < yd:
+                near_wall_list[i] = 20
+            else:
+                near_wall_list[i] = 2
+        elif tr['y'].iloc[i] > yu:
+            near_wall_list[i] = 1
+        elif tr['y'].iloc[i] < yd:
+            near_wall_list[i] = 3
+
+    tr['near_wall'] = np.asarray(near_wall_list)
+    return tr

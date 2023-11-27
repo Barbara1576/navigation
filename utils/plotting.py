@@ -21,4 +21,14 @@ def plot_trajectory(x, y, xylim=None):
     plt.show()
 
 
-# TODO: add def for plot dots in areas 
+def plot_wall_sorted_samples(df, plot_title):
+    # hard-code areas labels :)
+    all_areas = [40, 30, 20, 10, 4, 3, 2, 1, 0]
+    for a in all_areas:
+        x = df.loc[df['near_wall'] == a]['x']
+        y = df.loc[df['near_wall'] == a]['y']
+        plt.scatter(x, y, s=1.5, label=str(a))
+    plt.gca().set_aspect('equal')
+    plt.title(plot_title)
+    plt.legend(loc='center')
+    plt.show()
