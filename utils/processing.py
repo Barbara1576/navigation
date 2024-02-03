@@ -36,6 +36,12 @@ def cut_jumps(df, xmax, xmin, ymax, ymin, show=True):
     return dff
 
 
+def rescale_coord(data, new_min, new_max):
+    min_old_x, max_old_x = np.min(data), np.max(data)
+    data_rescaled = ((data - min_old_x) / (max_old_x - min_old_x)) * (new_max - new_min) + new_min
+    return data_rescaled
+
+
 def save_preprocessed_data(sub_trajs_list, k, PATH):
     if type(sub_trajs_list) != list:
         raise ValueError('Should be a list!')
