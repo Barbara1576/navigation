@@ -1,8 +1,13 @@
 import numpy as np
 import pandas as pd
-from utils.plotting import plot_trajectory
+from utils.plotting import (
+    plot_trajectory,
+    plot_marks_clusters
+    )
 import pickle
 import os
+from scipy.ndimage import gaussian_filter1d
+from sklearn.cluster import DBSCAN
 
 
 def open_file(ff, show=True):
@@ -42,6 +47,14 @@ def rescale_coord(data, new_min, new_max):
     return data_rescaled
 
 
+def df_minmax(occ):
+    if isinstance(occ, pd.DataFrame):
+        occ = occ.to_numpy()
+    kk = (occ - np.amin(occ)) / (np.amax(occ) - np.amin(occ))
+    kl = pd.DataFrame(kk)
+    return kl
+
+
 def save_preprocessed_data(sub_trajs_list, k, PATH):
     if type(sub_trajs_list) != list:
         raise ValueError('Should be a list!')
@@ -58,13 +71,13 @@ def open_preprocessed_data(fname):
     return sub_trajs_list
 
 
-def sort_walls_area(tr, wall_percent=0.1): 
-    ylen = tr['y'].max() - tr['y'].min() 
-    xlen = tr['x'].max() - tr['x'].min() 
-    xl = tr['x'].min() + xlen * wall_percent
-    xr = tr['x'].max() - xlen * wall_percent
-    yd = tr['y'].min() + ylen * wall_percent
-    yu = tr['y'].max()  - ylen * wall_percent
+def sort_walls_area(tr, border_tr, wall_percent=0.1): 
+    ylen = border_tr['ymax'] - border_tr['ymin'] 
+    xlen = border_tr['xmax'] - border_tr['xmin'] 
+    xl = border_tr['xmin'] + xlen * wall_percent
+    xr = border_tr['xmax'] - xlen * wall_percent
+    yd = border_tr['ymin'] + ylen * wall_percent
+    yu = border_tr['ymax'] - ylen * wall_percent
 
     near_wall_list = np.zeros((len(tr),))
     for i in range(len(tr)):     
@@ -89,3 +102,96 @@ def sort_walls_area(tr, wall_percent=0.1):
 
     tr['near_wall'] = np.asarray(near_wall_list)
     return tr
+
+
+def add_filtered_V(df, smooth_kern=2):
+    dt = df['time'].diff()
+    vx = df['x'].diff() / dt
+    vy = df['y'].diff() / dt
+    v = (vx**2 + vy**2)**0.5
+
+    dt[0], vx[0], vy[0] = 0., 0., 0.
+    v[0] = 0.
+    if smooth_kern:
+        vx = gaussian_filter1d(vx, smooth_kern)
+        vy = gaussian_filter1d(vy, smooth_kern)
+        v = gaussian_filter1d(v, smooth_kern)
+    df['Vx'] = vx
+    df['Vy'] = vy
+    df['V'] = v
+    df.loc[0, 'Vx'] = 0.
+    df.loc[0, 'Vy'] = 0.
+    df.loc[0, 'V'] = 0.
+    return df
+
+
+def add_step_length(df):
+    dx = df['x'].diff()
+    dy = df['y'].diff()
+    dx[0], dy[0] = 0., 0.,
+    step_lens = (dx**2 + dy**2)**0.5
+    df['step_length'] = step_lens
+    return df
+
+
+def add_angles(df):
+    dt = df['time'].diff()
+    vvx = df['x'].diff() / dt 
+    vvy = df['y'].diff() / dt 
+    dt[0], vvx[0], vvy[0] = 0., 0., 0.
+
+    Xx = np.arctan2(vvx, vvy)
+    Nres = normalize_angles_2pi(Xx)
+    ang = np.rad2deg(Nres) % 360
+    df['angles'] = ang
+    return df
+
+
+def add_delta_angles(df):
+    dangles = df['angles'].diff()
+    dangles[0] = 0.
+    dangles_rad = np.deg2rad(dangles)
+    normed_dangels_rad = normalize_angles_2pi(dangles_rad)
+    df['delta_angle'] = np.rad2deg(normed_dangels_rad) % 360
+    return df
+
+
+def cut_df(df_to_cut, n_of_parts, t1, t2):
+    dur_of_part = (t2 - t1) / n_of_parts
+    parts = []
+    for i in range(n_of_parts):
+        t1_local = t1 + dur_of_part * i
+        t2_local = t1 + dur_of_part * (i+1)
+        part_df = df_to_cut.loc[(df_to_cut['time'] > t1_local) & (df_to_cut['time'] < t2_local)]
+        parts.append(part_df)
+    return parts
+
+
+def cluster_marks(marks_coords, eps=4, min_samples=1,
+                  show=False):
+    X = np.asarray(marks_coords)
+    db = DBSCAN(eps=eps, min_samples=min_samples).fit(X)
+    labels = db.labels_
+    if show:
+        plot_marks_clusters(X, labels)
+    return labels
+
+
+def resample_data_to_larger_timestep(df, original_dt, new_dt):
+    from scipy import interpolate
+
+    duration = df['time'].iloc[-1] - df['time'].iloc[0]
+    x = df['x'].to_numpy()
+    y = df['y'].to_numpy()
+    t = df['time'].to_numpy()
+    fx = interpolate.interp1d(t, x)
+    fy = interpolate.interp1d(t, y)
+
+    new_time = np.arange(df['time'].iloc[0], df['time'].iloc[0] + duration, new_dt)
+    newx = fx(new_time)
+    newy = fy(new_time)
+
+    resampled_df = pd.DataFrame({'time': new_time,
+                                 'x': newx, 
+                                 'y': newy})
+    return resampled_df

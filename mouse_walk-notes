@@ -1,0 +1,50 @@
+
+PAPERS
+1. Lévy walk patterns in the foraging movements of spider monkeys
+(https://arxiv.org/ftp/physics/papers/0301/0301019.pdf)
+
+Lévy walks - is a random walk in which the step-lengths have a Lévy distribution, a probability distribution that is heavy-tailed. 
+Lévy walk model to be an optimal strategy to search for scarce resources distributed at random.
+One important property of Lévy walks is that they show self-similarity accross different spatial scales.
+Lévy walks, the mean-squared displacement increases faster in time than in other random walks such as a Brownian random walk.
+
+Second, the frequency distribution of the duration of stops or waiting times also approximates a power-law function. 
+
+The mean square displacement during the monkeys’ first foraging trip increases more rapidly than would be expected from a random walk with constant step length, but within the range predicted for Lévy walks.
+
+Divide analysis with some monkey behaviour in mind (e.g. signle/group)
+
+Если делать Levy walk на мышах, то что считать за step?
+Они записывали координаты обезьян каждую 5ю минуту и считали за шаг если одна или обе координаты менялись.
+
+The frequency distribution of step lengths was analyzed using a bin size of 10 m.
+Wating times were calculated from the number of samples in which the focal animal did not change position. 
+The frequency distribution of waiting times was analyzed using a bin size of one interval 5m.
+The log-log plot of both distributions was used to calculate the relationship that produced the best fit using a leastsquare method.
+
+Turning angles were calculated by substracting the absolute angle (with respect to the east-west axis and in a counterclockwise direction) of each step from the absolute angle of the previous step. A frequency distribution of turning angles was thus produced, using a bin size of 10 degrees.
+
+Squared displacement. - не надо нам, т.к. мыш в очень маленькой коробке
+
+Мы можем поварьировать bin size и посмотреть что меняется  
+
+In discussion they mention that the routes of monkeys can be biased by the smell and visual cues of food. Or also biased by memory of food location. Very interesting! So, we might try to reproduce results with mice and if it won't go well say that it proves that there should be more than just monkeys. Also the smell marks in mouse arena can be placed similary as trees for monkeys.
+ 
+
+
+2. Scaling law in free walking of mice in circular open fields of various diameters
+(https://sci-hub.ru/10.1007/s10867-015-9406-z)
+
+During a so-called stop state (i.e., when the mouse is resting), a mouse may perform many local movements, such as rearing backward and stepping sideways. Therefore, even if a mouse appears to be resting, its speed is not necessarily zero. - THRESHOLD!
+
+duration of free walking behavior summed for ten individual mice 
+
+It has been noted that thigmotaxis, i.e., the inclination to explore mainly the peripheral zone of a test apparatus
+
+Good discussion.
+
+
+
+
+
+

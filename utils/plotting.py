@@ -32,3 +32,23 @@ def plot_wall_sorted_samples(df, plot_title):
     plt.title(plot_title)
     plt.legend(loc='center')
     plt.show()
+
+
+def plot_marks_clusters(X, labels):
+
+    # Number of clusters in labels, ignoring noise if present
+    n_clusters_ = len(set(labels)) - (1 if -1 in labels else 0)
+    noise_ = list(labels).count(-1)
+
+    plt.figure(figsize=(6, 6))
+    unique_labels = set(labels)
+    colors = [plt.cm.Spectral(each) for each in np.linspace(0, 1, len(unique_labels))]
+    for k, col in zip(unique_labels, colors):
+        if k == -1:
+            col = [0, 0, 0, 1]  # black used for noise
+        class_member_mask = (labels == k)
+        xy = X[class_member_mask]
+        plt.plot(xy[:, 0], xy[:, 1], 'o', markerfacecolor=tuple(col),
+                markeredgecolor='k', markersize=14)
+    plt.title('Estimated number of clusters: %d' % n_clusters_)
+    plt.show()
