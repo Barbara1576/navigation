@@ -5,8 +5,6 @@ import matplotlib.pyplot as plt
 from scipy.ndimage import gaussian_filter
 from scipy.ndimage import gaussian_filter1d
 from scipy import stats
-import math
-import scipy
 
 
 def plot_trajectory(x, y, xylim=None):
