@@ -47,6 +47,10 @@ def rescale_coord(data, new_min, new_max):
     return data_rescaled
 
 
+def minmax_normalize(x):
+    return (x - x.min()) / (x.max() - x.min())
+
+
 def df_minmax(occ):
     if isinstance(occ, pd.DataFrame):
         occ = occ.to_numpy()
