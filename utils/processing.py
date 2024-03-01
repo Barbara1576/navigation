@@ -1,9 +1,9 @@
 import numpy as np
 import pandas as pd
-from utils.plotting import (
-    plot_trajectory,
-    plot_marks_clusters
-    )
+# from utils.plotting import (
+#     plot_trajectory,
+#     plot_marks_clusters
+#     )
 import pickle
 import os
 from scipy.ndimage import gaussian_filter1d
@@ -15,7 +15,8 @@ def open_file(ff, show=True):
     df = df.drop('idx', axis=1)
     df = df.drop(df[df.time > 1755].index)
     if show:
-        plot_trajectory(df['x'], df['y'])
+        # plot_trajectory(df['x'], df['y'])
+        print('not implemetned')
     return df
 
 
@@ -37,7 +38,8 @@ def cut_jumps(df, xmax, xmin, ymax, ymin, show=True):
     ind = range(0, len(dff))
     dff = dff.reindex(ind)
     if show:
-        plot_trajectory(dff['x'], dff['y'])
+        # plot_trajectory(dff['x'], dff['y'])
+        print('not implemented')
     return dff
 
 
@@ -177,7 +179,8 @@ def cluster_marks(marks_coords, eps=4, min_samples=1,
     db = DBSCAN(eps=eps, min_samples=min_samples).fit(X)
     labels = db.labels_
     if show:
-        plot_marks_clusters(X, labels)
+        # plot_marks_clusters(X, labels)
+        print('not implemented')
     return labels
 
 

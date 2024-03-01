@@ -1,11 +1,9 @@
 import pandas as pd
-import seaborn as sns
 import numpy as np
 import os
 import matplotlib.pyplot as plt
 from scipy.ndimage import gaussian_filter, gaussian_filter1d
-from scipy import stats
-from utils.processing import df_minmax, rescale_coord, minmax_normalize
+from utils.processing import df_minmax, rescale_coord
 
 from scipy.signal import butter, filtfilt
 import matplotlib.cm as cm
@@ -44,7 +42,7 @@ def plot_marks_clusters(X, labels):
 
     # Number of clusters in labels, ignoring noise if present
     n_clusters_ = len(set(labels)) - (1 if -1 in labels else 0)
-    noise_ = list(labels).count(-1)
+    # noise_ = list(labels).count(-1)
 
     plt.figure(figsize=(6, 6))
     unique_labels = set(labels)
@@ -55,8 +53,9 @@ def plot_marks_clusters(X, labels):
         class_member_mask = (labels == k)
         xy = X[class_member_mask]
         plt.plot(xy[:, 0], xy[:, 1], 'o', markerfacecolor=tuple(col),
-                markeredgecolor='k', markersize=14)
+                markeredgecolor='k', markersize=14, label=k)
     plt.title('Estimated number of clusters: %d' % n_clusters_)
+    plt.legend()
     plt.show()
 
 
