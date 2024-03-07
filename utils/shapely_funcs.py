@@ -69,14 +69,14 @@ def plot_shapely_traj(trajectory):
              markersize=0.3, alpha=0.5)
 
 
-def plot_shapely_marks(polygon, poly_buffer):
+def plot_shapely_marks(polygon, poly_buffer, label='none', color='blue'):
     # plot mark poly + buffer
     x_zone, y_zone = poly_buffer.exterior.xy
     plt.fill(x_zone, y_zone, alpha=0.25, linewidth=1, linestyle='-',
-                edgecolor='black', facecolor='gray', label='Zone Polygon')
+                edgecolor='black', facecolor='gray')
     x_poly, y_poly = polygon.exterior.xy
     plt.fill(x_poly, y_poly, alpha=0.25, linewidth=1, linestyle='-',
-                facecolor='blue', edgecolor='black', label='')
+                facecolor=color, edgecolor='black', label=label)
 
 
 def find_traj_marks_intersections(tr, marks_poly_list, show=True):
