@@ -2,8 +2,9 @@ import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
 from shapely.geometry import LineString, MultiLineString
-from shapely.geometry import MultiPoint, Polygon
+from shapely.geometry import MultiPoint, Polygon, Point
 from utils.plotting import plot_trajectory
+import shapely
 
 
 def marks2shapely(df_marks, clust_labels, r=3.5, show=True):
@@ -69,14 +70,21 @@ def plot_shapely_traj(trajectory):
              markersize=0.3, alpha=0.5)
 
 
-def plot_shapely_marks(polygon, poly_buffer, label='none', color='blue'):
+def plot_shapely_mark(polygon, poly_buffer, label='none', color='blue'):
     # plot mark poly + buffer
     x_zone, y_zone = poly_buffer.exterior.xy
     plt.fill(x_zone, y_zone, alpha=0.25, linewidth=1, linestyle='-',
                 edgecolor='black', facecolor='gray')
-    x_poly, y_poly = polygon.exterior.xy
-    plt.fill(x_poly, y_poly, alpha=0.25, linewidth=1, linestyle='-',
-                facecolor=color, edgecolor='black', label=label)
+    if type(polygon) == LineString:
+        coord = shapely.get_coordinates(polygon)
+        x, y = coord[:, 0], coord[:, 1]
+    elif type(polygon) == Point:
+        x, y = polygon.x, polygon.y
+    else:
+        x, y = polygon.exterior.xy
+
+    plt.fill(x, y, alpha=0.5, linewidth=1, linestyle='-',
+            facecolor=color, edgecolor='black', label=label)
 
 
 def find_traj_marks_intersections(tr, marks_poly_list, show=True):
@@ -99,7 +107,7 @@ def find_traj_marks_intersections(tr, marks_poly_list, show=True):
         # plotting traj, marks and intersections
         if not intersection.is_empty and show:
             plot_intersected_element(intersection)
-            plot_shapely_marks(polygon, poly_buffer)
+            plot_shapely_mark(polygon, poly_buffer)
     if show:
         plot_shapely_traj(trajectory)
         plt.show()
@@ -108,7 +116,7 @@ def find_traj_marks_intersections(tr, marks_poly_list, show=True):
 
 
 def extract_shapely_intersections(tr, marks_interections, buff=False,
-                                  eps = 0.05, show=True):
+                                  eps=0.05, show=True):
     tr['intersection'] = 0.
     df_inters_marks = {}
     for intersection, intersection_buff, lab in marks_interections:
@@ -141,7 +149,7 @@ def extract_shapely_intersections(tr, marks_interections, buff=False,
         tr.loc[u_idx, ['intersection']] = lab        
 
         if show:
-            plot_trajectory(df_inters['x'], df_inters['y'],
+            plot_trajectory(df_inters['x'], df_inters['y'], #marker='o',
                             center_mark=False)
 
     return df_inters_marks, tr
